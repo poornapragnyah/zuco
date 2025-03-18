@@ -1,0 +1,68 @@
+# EEG Preprocessing Pipeline Configuration
+
+# General settings
+general:
+  debug: true
+  save_intermediate: false
+
+# Data settings
+data:
+  sfreq: null  # Sampling frequency (Hz), null means use original
+  montage: 'GSN-HydroCel-128'  # EEG electrode montage
+  reference: 'average'  # Reference type: 'average', 'linked_mastoids', or channel name
+
+# Filter settings
+filters:
+  l_freq: 1.0  # Low cutoff frequency (Hz)
+  h_freq: 30.0  # High cutoff frequency (Hz)
+  notch_freq: 50.0  # Notch filter frequency (Hz)
+  filter_method: 'fir'  # Filter method: 'fir', 'iir'
+  iir_params:
+    order: 4
+    ftype: 'butter'
+  fir_params:
+    phase: 'zero-double'
+
+# Bad channel detection
+bad_channels:
+  auto_detect: true
+  z_threshold: 3.0  # Z-score threshold for marking channels as bad
+  correlation_threshold: 0.6  # Correlation threshold for marking channels as bad
+  known_bad_channels: []  # List of known bad channels to exclude
+
+# ICA settings
+ica:
+  n_components: 20  # Number of ICA components to compute
+  method: 'fastica'  # ICA method: 'fastica', 'infomax', 'extended-infomax'
+  auto_detect_artifacts: true  # Auto-detect and remove artifact components
+  eog_threshold: 3.0  # Threshold for EOG artifact detection
+  ecg_threshold: 3.0  # Threshold for ECG artifact detection
+  max_components_to_remove: 5  # Maximum number of components to remove
+
+# Adaptive filtering
+adaptive_filtering:
+  enabled: true
+  window_size: 10  # Window size in seconds
+  step: 1  # Step size in seconds
+  snr_threshold: 10  # SNR threshold for more aggressive filtering
+
+# Standardization
+standardization:
+  method: 'zscore'  # Method: 'zscore', 'robust', 'quantile'
+  apply_to: 'all'  # Apply to: 'all', 'channels', 'epochs'
+
+# Quality assessment
+quality:
+  run_assessment: true
+  metrics:
+    - 'snr'
+    - 'stationarity'
+    - 'channel_correlation'
+    - 'spike_rate'
+    - 'alpha_theta_ratio'
+    - 'kurtosis'
+    - 'entropy'
+  thresholds:
+    snr: 5.0  # Minimum acceptable SNR (dB)
+    spike_rate: 5.0  # Maximum acceptable spike rate per second
+    stationarity: 0.5  # Maximum acceptable stationarity coefficient

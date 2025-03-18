@@ -1,0 +1,13 @@
+l_freq=0.5 z_threshold 2.5
+
+Quality metrics:
+  snr: 49.126789795511506
+  stationarity: 0.6032922399599658
+  channel_correlation: 0.3173256795417657
+  spike_rate: 37.97899433399799
+  delta_power: 0.09719914591110954
+  theta_power: 0.028555079404230695
+  alpha_power: 0.03247222676763714
+  beta_power: 0.010841134259528417
+  gamma_power: 0.00046999456723099346
+  alpha_theta_ratio: 1.1371786542056013

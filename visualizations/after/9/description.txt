@@ -1,0 +1,1 @@
+same as 6 but ica method changed with autoreject 2s and 0.2 overlap high pass 2.0
