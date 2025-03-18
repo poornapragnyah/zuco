@@ -4,6 +4,9 @@ import mne
 import matplotlib.pyplot as plt
 import argparse
 from scipy import stats
+from scipy import io
+import h5py
+
 
 def assess_eeg_quality(file_path, output_dir=None):
     """
@@ -21,13 +24,21 @@ def assess_eeg_quality(file_path, output_dir=None):
     dict
         Dictionary containing quality metrics
     """
-    # Load the data
     raw = mne.io.read_raw(file_path, preload=True)
     
     # Create output directory if needed
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
         basename = os.path.basename(file_path).split('.')[0]
+
+    # # Create output directory if needed
+    # if output_dir:
+    #     os.makedirs(output_dir, exist_ok=True)
+    #     if original_file_path:
+    #         basename = os.path.basename(original_file_path).split('.')[0]
+    #     else:
+    #         # Generate a timestamp-based name if original path not provided
+    #         basename = f"eeg_quality_assessment_{int(time.time())}"
     
     # Extract data
     data = raw.get_data()
@@ -50,7 +61,6 @@ def assess_eeg_quality(file_path, output_dir=None):
     
     # Calculate SNR
     snr = 10 * np.log10(signal_power / noise_power)
-    metrics['snr'] = np.mean(snr)
     
     # 2. Stationarity (variance over time)
     window_size = int(sfreq * 10)  # 10-second windows

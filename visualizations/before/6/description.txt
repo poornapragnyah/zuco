@@ -1,1 +1,0 @@
-l_freq=0.5 z_threshold 2.5 fir_window='hamming' freqs=[self.notch_freq, 2 * self.notch_freq, 3 * self.notch_freq] in notch filtering to eliminate freq and its harmonics in apply filter method

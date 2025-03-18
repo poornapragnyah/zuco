@@ -1,13 +1,1 @@
-base run
-
-Quality metrics:
-  snr: 49.69611788086084
-  stationarity: 0.4935059454356542
-  channel_correlation: 0.3471403309370724
-  spike_rate: 37.96912325035042
-  delta_power: 0.11245510392596478
-  theta_power: 0.03473884824819696
-  alpha_power: 0.03964921081392434
-  beta_power: 0.013150477857265724
-  gamma_power: 0.0005794700490430662
-  alpha_theta_ratio: 1.14135075897291
+Initial commit

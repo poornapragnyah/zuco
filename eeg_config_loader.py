@@ -1,7 +1,7 @@
 import os
 import yaml
 import argparse
-from eeg_preprocessor import EEGPreprocessor
+from eeg_preprocessor_2 import EEGPreprocessor
 from eeg_quality_assesment import assess_eeg_quality
 
 class ConfigLoader:
@@ -207,8 +207,16 @@ class ConfigLoader:
         
         # Run quality assessment if configured
         if self.config['quality'].get('run_assessment', True):
-            metrics = assess_eeg_quality(preprocessor.raw)
-            
+            # Run the quality assessment with the new function call
+            try:
+                print(preprocessor.raw)
+                metrics = assess_eeg_quality(
+                    preprocessor.raw,
+                )
+            except Exception as e:
+                print(f"Error during quality assessment: {e}")
+                return preprocessor.raw
+
             # Check against thresholds
             thresholds = self.config['quality'].get('thresholds', {})
             passed_qa = True

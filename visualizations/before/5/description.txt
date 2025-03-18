@@ -1,1 +1,0 @@
-l_freq=0.5 z_threshold 2.5

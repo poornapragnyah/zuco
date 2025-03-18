@@ -89,6 +89,28 @@ class EEGPreprocessor:
                 self.raw = mne.io.read_raw_cnt(file_path, preload=True)
             elif file_ext == '.bdf':
                 self.raw = mne.io.read_raw_bdf(file_path, preload=True)
+            elif file_ext == '.npy':
+                # Load the .npy file
+                data = np.load(file_path)
+                
+                # Ensure the data is in the correct shape (n_channels, n_samples)
+                if data.ndim == 1:
+                    data = data[np.newaxis, :]  # Convert to (1, n_samples) if single channel
+                elif data.ndim == 2 and data.shape[0] > data.shape[1]:
+                    data = data.T  # Transpose to (n_channels, n_samples)
+                
+                # Create an MNE Info object
+                if self.sfreq is None:
+                    raise ValueError("Sampling frequency (sfreq) must be provided for .npy files")
+                
+                info = mne.create_info(
+                    ch_names=[f'EEG {i+1}' for i in range(data.shape[0])],  # Default channel names
+                    sfreq=self.sfreq,
+                    ch_types='eeg'  # Assuming all channels are EEG
+                )
+                
+                # Create the RawArray object
+                self.raw = mne.io.RawArray(data, info)
             else:
                 raise ValueError(f"Unsupported file format: {file_ext}")
                 
@@ -110,7 +132,7 @@ class EEGPreprocessor:
         except Exception as e:
             print(f"Error loading file {file_path}: {e}")
             raise
-            
+
     def channel_alignment(self):
         """
         Ensure all channels are correctly positioned and referenced.
@@ -402,7 +424,7 @@ class EEGPreprocessor:
         self.raw.save(output_path, overwrite=True)
         print(f"Saved processed data to {output_path}")
         return self
-        
+
     def save_visualizations(self, prefix, run_num, desc):
         try:
             print(f"Saving {prefix} visualizations...")
@@ -431,33 +453,33 @@ class EEGPreprocessor:
                     print("ICA not provided. Creating ICA...")
                     ica = mne.preprocessing.ICA(n_components=20, random_state=42, max_iter='auto')
                     ica.fit(self.raw)
+                    self.ica = ica
                 else:
                     ica = self.ica
             except Exception as e:
                 print(f"Error creating or fitting ICA: {e}")
                 return
 
-            # ICA components visualization
+            # ICA components and sources visualization
             try:
-                if hasattr(self, 'ica') and self.ica is not None:
-                    # Create directory for ICA components
-                    os.makedirs(f"visualizations/{prefix}/{run_num}/ica_components", exist_ok=True)
+                print("Generating ICA components and sources visualizations...")
+                os.makedirs(f"visualizations/{prefix}/{run_num}/ica_components", exist_ok=True)
 
-                    # Plot components - returns a list of figures
-                    fig_ica_components = self.ica.plot_components(
-                        picks=range(min(20, self.ica.n_components_)),
-                        outlines='head', show=False
-                    )
+                # Plot ICA components
+                fig_ica_components = ica.plot_components(show=False)
+                fig_ica_components.savefig(f"visualizations/{prefix}/{run_num}/ica_components/ica_components_{prefix}.png")
+                plt.close(fig_ica_components)
 
-                    # Save each figure in the list individually
-                    for i, fig in enumerate(fig_ica_components):
-                        try:
-                            fig.savefig(f"visualizations/{prefix}/{run_num}/ica_components/ica_components_{prefix}_{i}.png")
-                            plt.close(fig)  # Close to free memory
-                        except Exception as e:
-                            print(f"Error saving ICA component {i}: {e}")
+                # Plot ICA sources
+                try:
+                    fig_ica_sources = ica.plot_sources(self.raw, show=False)
+                    fig_ica_sources.savefig(f"visualizations/{prefix}/{run_num}/ica_components/ica_sources_{prefix}.png")
+                    plt.close(fig_ica_sources)
+                except Exception as e:
+                    print(f"Error plotting ICA sources: {e}")
+
             except Exception as e:
-                print(f"Error plotting ICA components: {e}")
+                print(f"Error plotting ICA components or sources: {e}")
 
         except Exception as e:
             print(f"Unexpected error in save_visualizations: {e}")

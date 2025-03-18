@@ -13,7 +13,7 @@ data:
 
 # Filter settings
 filters:
-  l_freq: 1.0  # Low cutoff frequency (Hz)
+  l_freq: 0.5  # Low cutoff frequency (Hz)
   h_freq: 30.0  # High cutoff frequency (Hz)
   notch_freq: 50.0  # Notch filter frequency (Hz)
   filter_method: 'fir'  # Filter method: 'fir', 'iir'
@@ -63,6 +63,6 @@ quality:
     - 'kurtosis'
     - 'entropy'
   thresholds:
-    snr: 5.0  # Minimum acceptable SNR (dB)
+    snr: 45.0  # Minimum acceptable SNR (dB)
     spike_rate: 5.0  # Maximum acceptable spike rate per second
     stationarity: 0.5  # Maximum acceptable stationarity coefficient
